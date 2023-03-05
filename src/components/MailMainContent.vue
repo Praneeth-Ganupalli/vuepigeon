@@ -8,24 +8,38 @@
             Refresh
         </button>
     </template>
-    <section class="user-mails-section table-responsive">
+    <template v-if="!showFullContent">
+        <section class="user-mails-section table-responsive">
         <table class=" table table-hover">
             <tbody>
-                <tr v-for="message in messages" :key="message" :id="message.id">
+                <tr v-for="message in messages" :key="message" :id="message.id" :class="`cursor-pointer ${message.type==='incoming' && !message.isRead?'unread':'read'}`" @click="viewFullMail(message)">
                     <MailListItem :item="message" />
                 </tr>
             </tbody>
         </table>
     </section>
+    </template>
+    <template v-else>
+        <MailitemContent :item="currentMail" @back-action="resetMailContent" />
+    </template>
+    
 </template>
 <script lang="js">
 import Messages from "../assets/messages.js"
 import MailListItem from "./MailListItem.vue"
 import RandomMessages from "../assets/random-messages.js"
+import MailitemContent from "./MailitemContent.vue"
 export default {
     name: "MailMainContent",
     components: {
-        MailListItem
+        MailListItem,
+        MailitemContent
+    },
+    data(){
+        return {
+            prevTitle:"",
+            currentMail:null
+        }
     },
     computed: {
         messages() {
@@ -33,6 +47,9 @@ export default {
         },
         title() {
             return this.$store.state.appTitle;
+        },
+        showFullContent(){
+            return this.$store.state.showFullContent;
         }
     },
     methods:{
@@ -42,7 +59,23 @@ export default {
             let newMessages=[...randomMessages,...existingMessages];
             this.$store.commit("setMessages", newMessages);
             this.$store.commit("setInboxMessages");
+        },
+        viewFullMail(item){
+            this.prevTitle=this.title;
+            this.currentMail=item;
+            this.$store.commit("setAppTitle",item.subject);
+            this.$store.commit("setMessageReadInfo",{
+                id:item.id,
+                value:true
+            });
+            this.$store.commit("setShowFullContent",true);
+        },
+        resetMailContent(){
+            this.$store.commit("setAppTitle",this.prevTitle);
+            this.$store.commit("setShowFullContent",false);
+            this.currentMail=null;
         }
+
     },
     mounted() {
         this.$store.commit("setMessages", Messages);
@@ -61,7 +94,10 @@ section.user-mails-section {
     padding-left: 2rem;
     padding-top: 1rem;
 }
-
+tr.unread
+{
+    background:gainsboro;
+}
 table tr td {
     padding: 12px;
 }

@@ -2,7 +2,7 @@
     <td>
         <input type="checkbox" class="form-check" />
     </td>
-    <td class="cursor-pointer" @click="toggleImportantMark">
+    <td class="cursor-pointer" @click.stop="toggleImportantMark">
         <i class="uil uil-star text-warning" v-if="!item.isImportant"></i>
         <img src="../assets/star.svg" height="16" width="16" v-else/>
     </td>

@@ -3,7 +3,8 @@ const store=createStore({
     state:{
         appTitle:"Inbox",
         messages:[],
-        displayedMessages:[]
+        displayedMessages:[],
+        showFullContent:false
     },
     mutations:{
         setAppTitle(state,data)
@@ -51,6 +52,26 @@ const store=createStore({
             if(state.appTitle==="Sent")
             {
                 state.displayedMessages=[...state.displayedMessages,data];
+            }
+        },
+        setShowFullContent(state,data)
+        {
+            state.showFullContent=data;
+        },
+        setDeletedMail(state,data)
+        {
+            const mailIdx=state.messages.findIndex(msg=>msg.id===data);
+            if(mailIdx>-1)
+            {
+                state.messages[mailIdx].isDeleted=true;
+            }
+        },
+        setMessageReadInfo(state,data)
+        {
+            const mailIdx=state.messages.findIndex(msg=>msg.id===data.id);
+            if(mailIdx>-1)
+            {
+                state.messages[mailIdx].isRead=data.value;
             }
         }
     },

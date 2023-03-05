@@ -23,8 +23,10 @@ export default {
     methods:{
         changeCategory()
         {
+            this.$store.commit("setShowFullContent",false);
             this.$store.commit("setAppTitle",this.label);
             this.$emit("update-category");
+            
         }
     }
 }
